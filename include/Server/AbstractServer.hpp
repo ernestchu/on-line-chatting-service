@@ -18,15 +18,22 @@ namespace srv {
     public:
         AbstractServer() = delete;
         AbstractServer(const char* service);
-        virtual void mainloop(int log=0) = 0;
+        AbstractServer(const char* service, const int log);
+        virtual void mainloop() = 0;
     protected:
-        std::string makeOnlineMsg(std::string uname);
-        std::string makeOfflineMsg(std::string uname);
+        std::string makeOnlineMsg(
+            const struct sockaddr_in& sin,
+            const std::string& uname
+        );
+        std::string makeOfflineMsg(const std::string& uname);
+        void messageLog(const proto::MessageWrapper& msg, const int recv=1);
+        void broadcast(const proto::MessageWrapper& msg);
 
         const unsigned short QLEN    = 32;      // TCP queue length
         const unsigned short BUFSIZE =          // read/write buffer size
             sizeof(proto::MessageWrapper);
         const char* service;                    // service name, port number
+        const int log;
 
         std::unordered_map<                     // Online users (lookup by fd)
             int,

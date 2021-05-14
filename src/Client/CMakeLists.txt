@@ -1,0 +1,16 @@
+set(HDIR "${CMAKE_SOURCE_DIR}/include/Client")
+
+add_library(WindowController STATIC WindowController.cpp ${HDIR}/WindowController.hpp)
+add_library(Network STATIC Network.cpp ${HDIR}/Network.hpp)
+
+target_include_directories(WindowController PUBLIC ${HDIR})
+target_include_directories(Network PUBLIC ${HDIR})
+
+target_compile_features(WindowController PUBLIC cxx_std_17)
+target_compile_features(Network PUBLIC cxx_std_17)
+
+target_link_libraries(WindowController PUBLIC Windows)
+target_link_libraries(Network PUBLIC ConnectTCP)
+
+add_subdirectory(Windows)
+

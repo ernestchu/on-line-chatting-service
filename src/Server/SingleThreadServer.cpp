@@ -7,9 +7,12 @@
 #include <SingleThreadServer.hpp>
 
 namespace srv {
-    SingleThreadServer::SingleThreadServer(const char* service) : AbstractServer(service) {}
-    void SingleThreadServer::mainloop(int log) {
-        struct sockaddr_in fsin;    // the src address of a client
+    SingleThreadServer::SingleThreadServer(const char* service) : 
+        AbstractServer(service) {}
+    SingleThreadServer::SingleThreadServer(const char* service, const int log) : 
+        AbstractServer(service, log) {}
+    void SingleThreadServer::mainloop() {
+        struct sockaddr_in sin;    // the src address of a client
         int msock;                  // master server socket
         fd_set rfds;                // read file descriptor set
         fd_set wfds;                // write file descriptor set
@@ -17,7 +20,7 @@ namespace srv {
         unsigned int alen;          // from-address length
         int nfds=getdtablesize();   // number of file descriptors
 
-        msock = cnt::passiveTCP(this->service, this->QLEN, log);
+        msock = cnt::passiveTCP(this->service, this->QLEN, this->log);
 
         FD_ZERO(&afds);
         FD_SET(msock, &afds);
@@ -26,7 +29,7 @@ namespace srv {
             memcpy(&rfds, &afds, sizeof(rfds)); // copy afds to rfds
             memcpy(&wfds, &afds, sizeof(wfds)); // copy afds to wfds
             
-            // Select a subset from the active fds, it may clients that
+            // Select a subset from the active fds, they may be clients that
             //      1) ready to be read from (client that is writing to the server)
             //      2) ready to be written to (client that is reading from the server)
             // So the server would not perform blocking reading/writing call
@@ -36,11 +39,12 @@ namespace srv {
             // Master socket: accept new request
             if (FD_ISSET(msock, &rfds)) {
                 int ssock;
-                alen = sizeof(fsin);
-                ssock = accept(msock, (struct sockaddr*)&fsin, &alen);
+                alen = sizeof(sin);
+                ssock = accept(msock, (struct sockaddr*)&sin, &alen);
                 if (ssock < 0)
                     cnt::errexit("accept: error %s\n", strerror(errno));
                 FD_SET(ssock, &afds);
+                this->addNewClient(sin, ssock);
             }
             
             // Slave sockets: handle requests
@@ -55,7 +59,30 @@ namespace srv {
         }
     }
 
-    void SingleThreadServer::readMessage(int fd) {
+
+    void SingleThreadServer::addNewClient(
+        const struct sockaddr_in& sin,
+        const int& fd
+    ) {
+        // first time information acquire
+        proto::MessageWrapper buf; // buf.uname is the new client's name
+        int nbytes = read(fd, reinterpret_cast<char*>(&buf), sizeof(buf));
+        if (nbytes < 0)
+            cnt::errexit("Read message failed: %s\n", strerror(errno));
+
+        proto::MessageWrapper onBuf;
+        std::strcpy(onBuf.message, this->makeOnlineMsg(sin, buf.uname).c_str());
+        onBuf.timestamp = std::time(nullptr);
+        this->broadcast(onBuf);
+ 
+        registeredUsers.insert(buf.uname);
+        onlineUsers[fd] = buf.uname;
+
+        if (this->log)
+            std::cout << onBuf.message << std::endl;
+    }
+
+    void SingleThreadServer::readMessage(const int& fd) {
         proto::MessageWrapper buf; // buf.uname is whom fd wants to send to
 
         int nbytes = read(fd, reinterpret_cast<char*>(&buf), sizeof(buf));
@@ -64,7 +91,6 @@ namespace srv {
             cnt::errexit("Read message failed: %s\n", strerror(errno));
         else if (nbytes > 0) {
             // Normal message transmission
-
             std::string sender   = onlineUsers[fd];
             std::string receiver = buf.uname;
             std::strcpy(buf.uname, sender.c_str());
@@ -74,9 +100,12 @@ namespace srv {
             else
                 // if the sender receives his own uname -> receiver not found!
                 messagePool[sender].push(buf); 
+
+            if (this->log)
+                this->messageLog(buf);
         }
         else {
-            // A user just turned off-line
+            // A user just went off-line
             auto sender = onlineUsers[fd];
             this->onlineUsers.erase(fd);
 
@@ -85,13 +114,14 @@ namespace srv {
             std::strcpy(offBuf.message, this->makeOfflineMsg(sender).c_str());
             offBuf.timestamp = std::time(nullptr);
 
-            // c++17
-            for (auto const& [_, receiver] : this->onlineUsers)
-                messagePool[receiver].push(offBuf); 
+            this->broadcast(offBuf);
+
+            if (this->log)
+                std::cout << offBuf.message << std::endl;
         }
     }
 
-    void SingleThreadServer::writeMessage(int fd) {
+    void SingleThreadServer::writeMessage(const int& fd) {
         std::string receiver;
         if (
             (receiver = this->onlineUsers[fd]) != "" // not found, (return string's default ctor "")
@@ -102,6 +132,8 @@ namespace srv {
             if (write(fd, reinterpret_cast<char*>(&buf), sizeof(buf)) < 0)
                 cnt::errexit("Write message failed: %s\n", strerror(errno));
             this->messagePool[receiver].pop();
+            if (this->log)
+                this->messageLog(buf, 0);
         }
     }
 }

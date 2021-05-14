@@ -11,10 +11,15 @@ namespace srv {
     public:
         SingleThreadServer() = delete;
         SingleThreadServer(const char* service);
-        void mainloop(int log=0);
+        SingleThreadServer(const char* service, const int log);
+        void mainloop();
     protected:
-        void readMessage(int fd);
-        void writeMessage(int fd);
+        void addNewClient(
+            const struct sockaddr_in& sin,
+            const int& fd
+        );
+        void readMessage(const int& fd);
+        void writeMessage(const int& fd);
     };
 }
 

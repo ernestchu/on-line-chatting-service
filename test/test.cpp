@@ -1,7 +1,7 @@
-#include <SingleThreadServer.hpp>
+#include <WindowController.hpp>
 
 int main() {
-    srv::SingleThreadServer test("1234") ;
-    test.mainloop(1);
+    cli::WindowController controller;
+    controller.mainloop();
     return 0;
 }
