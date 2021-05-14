@@ -17,12 +17,11 @@
 #include <netdb.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #ifndef INADDR_NONE
 #define INADDR_NONE 0xffffffff
 #endif
-
-extern int errno;
 
 namespace cnt {
     int connectSock(

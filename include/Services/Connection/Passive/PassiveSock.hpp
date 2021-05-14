@@ -19,8 +19,7 @@
 #include <stdlib.h>
 #include <ifaddrs.h> // struct ifaddrs
 #include <iostream> // for log == 1
-
-extern int errno;
+#include <errno.h>
 
 namespace cnt {
     int passiveSock(
