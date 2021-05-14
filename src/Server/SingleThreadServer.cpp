@@ -19,6 +19,9 @@ namespace srv {
         fd_set afds;                // active file descriptor set
         unsigned int alen;          // from-address length
         int nfds=getdtablesize();   // number of file descriptors
+        // nfds might be larger than FD_SETSIZE
+        // e.g. on my macOS 11, but not on Ubuntu 20.04
+        if (nfds > FD_SETSIZE) nfds = FD_SETSIZE;
 
         msock = cnt::passiveTCP(this->service, this->QLEN, this->log);
 
@@ -33,7 +36,6 @@ namespace srv {
             //      1) ready to be read from (client that is writing to the server)
             //      2) ready to be written to (client that is reading from the server)
             // So the server would not perform blocking reading/writing call
-            std::cout << nfds << std::endl;
             struct timeval zero = {0, 0};
             if (select(nfds, &rfds, &wfds, (fd_set*)0, &zero) < 0)
                 cnt::errexit("select error: %s\n", strerror(errno));
@@ -53,7 +55,7 @@ namespace srv {
             for (int fd = 0; fd < nfds; fd++) {
                 // Ready to be read from
                 if (fd != msock && FD_ISSET(fd, &rfds))
-                    this->readMessage(fd);
+                    this->readMessage(fd, afds);
                 // Ready to be written to
                 else if (fd != msock && FD_ISSET(fd, &wfds))
                     this->writeMessage(fd);
@@ -84,7 +86,7 @@ namespace srv {
             std::cout << onBuf.message << std::endl;
     }
 
-    void SingleThreadServer::readMessage(const int& fd) {
+    void SingleThreadServer::readMessage(const int& fd, fd_set& afds) {
         proto::MessageWrapper buf; // buf.uname is whom fd wants to send to
 
         int nbytes = read(fd, reinterpret_cast<char*>(&buf), sizeof(buf));
@@ -108,6 +110,7 @@ namespace srv {
         }
         else {
             // A user just went off-line
+            FD_CLR(fd, &afds);
             auto sender = onlineUsers[fd];
             this->onlineUsers.erase(fd);
 

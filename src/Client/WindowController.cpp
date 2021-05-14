@@ -34,6 +34,8 @@ namespace cli {
         network.setService(loginWin.getService());
         network.setUname(loginWin.getUname());
 
+        network.connect();
+
         wgetch(this->win);
         endwin();
     }

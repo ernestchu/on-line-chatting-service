@@ -19,7 +19,8 @@ namespace srv {
             const struct sockaddr_in& sin,
             const int& fd
         );
-        void readMessage(const int& fd);
+        // afds is needed to clr a fd when it's off-line
+        void readMessage(const int& fd, fd_set& afds);
         void writeMessage(const int& fd);
     };
 }
