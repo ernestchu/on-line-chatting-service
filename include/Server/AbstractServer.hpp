@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include <queue>
 #include <unordered_map>
+#include <cstring>
 
 namespace srv {
     class AbstractServer {
