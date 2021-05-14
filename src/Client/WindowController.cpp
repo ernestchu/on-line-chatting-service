@@ -6,25 +6,33 @@ namespace cli {
     }
     
     void WindowController::mainloop() {
+        // ######### Initialization #############
         // start ncurses
         // initialize all windows
         this->win = initscr(); // return stdscr
         win::LoginWindow loginWin;
 
+
+        // initialize network service
+        Network network;
+
+
+        // ######### Print title #############
         // set some option
         noecho();
         curs_set(0); // hide cursor      
-
         printw("The TCP Chat Room");
 
-        wgetch(this->win);
+        // ######### Login #############
+        // retrieve form inputs
         loginWin.show();
         wrefresh(this->win);
         redrawwin(this->win);
 
-        printw("%s", loginWin.getHost().c_str());
-        printw("%s", loginWin.getService().c_str());
-        printw("%s", loginWin.getUname().c_str());
+        // config connection info
+        network.setHost(loginWin.getHost());
+        network.setService(loginWin.getService());
+        network.setUname(loginWin.getUname());
 
         wgetch(this->win);
         endwin();

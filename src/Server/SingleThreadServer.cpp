@@ -35,7 +35,7 @@ namespace srv {
             // So the server would not perform blocking reading/writing call
             if (select(nfds, &rfds, &wfds, (fd_set*)0, (struct timeval*)0) < 0)
                 cnt::errexit("select error: %s\n", strerror(errno));
-        
+
             // Master socket: accept new request
             if (FD_ISSET(msock, &rfds)) {
                 int ssock;
