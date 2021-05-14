@@ -2,6 +2,7 @@
 
 #include <ncurses.h>
 #include <string>
+#include <cstring>
 #include <cmath>
 
 namespace win {
