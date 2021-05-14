@@ -5,6 +5,7 @@
  */
 
 #include <AbstractServer.hpp>
+#include <sys/select.h>
 
 namespace srv {
     class SingleThreadServer : public AbstractServer {
