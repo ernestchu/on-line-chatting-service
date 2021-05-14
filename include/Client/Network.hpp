@@ -2,6 +2,7 @@
 #include <ConnectTCP.hpp>
 #include <MessageWrapper.hpp>
 #include <string>
+#include <cstring>
 #include <unistd.h>
 
 namespace cli {
