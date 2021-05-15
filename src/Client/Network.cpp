@@ -13,13 +13,13 @@ namespace cli {
 
     }
 
-    void Network::setHost(std::string host) {
-        this->host = host;
+    void Network::sendMessage(std::string message) {
+        
     }
-    void Network::setService(std::string service) {
-        this->service = service;
-    }
-    void Network::setUname(std::string uname) {
-        this->uname = uname;
-    }
+
+
+    
+    void Network::setHost(std::string host) { this->host = host; }
+    void Network::setService(std::string service) { this->service = service; }
+    void Network::setUname(std::string uname) { this->uname = uname; }
 }

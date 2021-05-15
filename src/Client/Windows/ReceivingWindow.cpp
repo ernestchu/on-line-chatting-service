@@ -19,7 +19,6 @@ namespace win {
     }
     void ReceivingWindow::show() {
         wrefresh(this->win);
-        wgetch(this->win);
     }
 
 }

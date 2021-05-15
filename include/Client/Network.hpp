@@ -9,6 +9,7 @@ namespace cli {
     class Network {
     public:       
         void connect();
+        void sendMessage(std::string message);
 
         void setHost(std::string host);
         void setService(std::string service);

@@ -20,5 +20,20 @@ namespace win {
     void InputWindow::show() {
         wrefresh(this->win);
     }
+    void InputWindow::fill() {
+        // Fill the message
+        echo();
+        nocbreak();
+        curs_set(1); // show cursor      
+ 
+        std::string buf;
+        int ch = mvwgetch(this->win, 1, 1);
+        while (ch != '\n') {
+            buf.push_back(ch);
+            ch = wgetch(this->win);
+        }
+        this->message = buf;
+    }
+    std::string InputWindow::getMessage() { return this->message; }
 
 }

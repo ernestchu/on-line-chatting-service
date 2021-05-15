@@ -69,12 +69,14 @@ namespace win {
     std::string LoginWindow::getUname() { return this->uname; }
 
     void LoginWindow::show() {   
+        wrefresh(this->win);
+    }
+    void LoginWindow::fill() {   
         // Fill the form
         echo();
         nocbreak();
         curs_set(1); // show cursor      
         
-        wrefresh(this->win);
         int i = 0;
         for (const auto& w : {
             &this->hostInputWin,
@@ -99,7 +101,6 @@ namespace win {
                     break;
             }
         }
-
         // restore options
         noecho();
         cbreak();

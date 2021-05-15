@@ -7,7 +7,10 @@ namespace win {
         InputWindow();
         ~InputWindow();
         void show();
+        void fill();
+        std::string getMessage();
     private:
         WINDOW* win;
+        std::string message;
     };
 }

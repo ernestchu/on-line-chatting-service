@@ -10,6 +10,7 @@ namespace win {
         std::string getService();
         std::string getUname();
         void show();
+        void fill();
     private:
         WINDOW* win;
         WINDOW* hostInputWin;
