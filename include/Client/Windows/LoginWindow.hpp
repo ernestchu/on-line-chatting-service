@@ -1,9 +1,5 @@
 #pragma once
-
-#include <ncurses.h>
-#include <string>
-#include <cstring>
-#include <cmath>
+#include <WindowConfig.hpp>
 
 namespace win {
     class LoginWindow {
@@ -22,6 +18,5 @@ namespace win {
         std::string host;
         std::string service;
         std::string uname;
-        static constexpr double paddingRatio = .05;
     };
 }

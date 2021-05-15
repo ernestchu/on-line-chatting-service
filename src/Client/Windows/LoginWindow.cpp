@@ -6,7 +6,7 @@ namespace win {
         int yBeg, xBeg, yMax, xMax;
         getmaxyx(stdscr, yMax, xMax);
         double padding = (yMax>xMax)? yMax: xMax;
-        padding *= LoginWindow::paddingRatio;
+        padding *= WindowConfig::paddingRatio;
         this->win = newwin(
             (int)std::ceil(yMax - padding*2),
             (int)std::ceil(xMax - padding*2),
@@ -74,6 +74,7 @@ namespace win {
         nocbreak();
         curs_set(1); // show cursor      
         
+        wrefresh(this->win);
         int i = 0;
         for (const auto& w : {
             &this->hostInputWin,

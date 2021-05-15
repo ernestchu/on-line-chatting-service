@@ -11,11 +11,11 @@ namespace cli {
         // initialize all windows
         this->win = initscr(); // return stdscr
         win::LoginWindow loginWin;
-
+        win::InputWindow inputWin;
+        win::ReceivingWindow recvWin;
 
         // initialize network service
         Network network;
-
 
         // ######### Print title #############
         // set some option
@@ -34,11 +34,21 @@ namespace cli {
         network.setService(loginWin.getService());
         network.setUname(loginWin.getUname());
 
-        network.connect();
+        // connect to server
+        // network.connect();
+
+        // entering chat room
+        std::thread inputTh = this->inputController(inputWin);
+        recvWin.show();
 
         wgetch(this->win);
         endwin();
     }
-
+    std::thread WindowController::inputController(win::InputWindow& inputWin) {
+        return std::thread( [&, this] { this->ic(inputWin); } );
+    }
+    void WindowController::ic(win::InputWindow& inputWin) {
+        inputWin.show();
+    }
 }
 
