@@ -6,7 +6,7 @@ namespace win {
         int yBeg, xBeg, yMax, xMax;
         getmaxyx(stdscr, yMax, xMax);
         double padding = (yMax>xMax)? yMax: xMax;
-        padding *= paddingRatio;
+        padding *= LoginWindow::paddingRatio;
         this->win = newwin(
             (int)std::ceil(yMax - padding*2),
             (int)std::ceil(xMax - padding*2),

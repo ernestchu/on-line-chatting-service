@@ -6,7 +6,6 @@
 #include <cmath>
 
 namespace win {
-    static double paddingRatio = .05;
     class LoginWindow {
     public:
         LoginWindow();
@@ -23,5 +22,6 @@ namespace win {
         std::string host;
         std::string service;
         std::string uname;
+        static constexpr double paddingRatio = .05;
     };
 }
