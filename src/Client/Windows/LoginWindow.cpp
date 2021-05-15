@@ -69,10 +69,6 @@ namespace win {
     std::string LoginWindow::getUname() { return this->uname; }
 
     void LoginWindow::show() {   
-        int yMax, xMax;
-        getmaxyx(this->win, yMax, xMax);
-        wrefresh(this->win);
-
         // Fill the form
         echo();
         nocbreak();
