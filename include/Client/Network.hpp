@@ -14,6 +14,7 @@ namespace cli {
             const std::string& message
         );
         void sendUsage();
+        proto::MessageWrapper receive();
 
         void setHost(std::string host);
         void setService(std::string service);

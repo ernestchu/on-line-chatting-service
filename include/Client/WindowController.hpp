@@ -6,6 +6,7 @@
 #include <mutex>
 #include <regex>
 #include <sstream>
+#include <ctime>
 
 namespace cli {
     class WindowController {

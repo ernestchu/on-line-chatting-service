@@ -3,6 +3,8 @@
 #include <string>
 #include <cstring>
 #include <cmath>
+#include <MessageWrapper.hpp>
+#include <algorithm> // count
 
 namespace win {
     class WindowConfig {

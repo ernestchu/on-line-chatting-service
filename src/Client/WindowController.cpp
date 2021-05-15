@@ -43,6 +43,14 @@ namespace cli {
             this->mu.lock();
             recvWin.show();
             this->mu.unlock();
+
+            proto::MessageWrapper mw = this->network.receive();
+            this->mu.lock();
+            this->recvWin.printMessage(mw);
+            recvWin.show();
+            this->mu.unlock();
+
+            // check if the user has entered `logout`
             if (inputTh.joinable()) {
                 inputTh.join();
                 break;

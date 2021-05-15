@@ -31,7 +31,7 @@ namespace cli {
         std::strcpy(buf.uname, this->uname.c_str());
         std::strcpy(
             buf.message,
-            "Usage: <command> [<receiver> ...] [\"<message>\"]\n"
+            "\nUsage: <command> [<receiver> ...] [\"<message>\"]\n"
             "Command: chat, logout\n"
             "\tE.g. chat Ernie \"Good Program!\""
         );
@@ -39,6 +39,15 @@ namespace cli {
 
         if (write(this->fd, reinterpret_cast<char*>(&buf), sizeof(buf)) < 0)
             cnt::errexit("Write message failed: %s\n", strerror(errno));
+    }
+    proto::MessageWrapper Network::receive() {
+        proto::MessageWrapper buf;
+        int nbytes = read(this->fd, reinterpret_cast<char*>(&buf), sizeof(buf));
+
+        if (nbytes < 0)
+            cnt::errexit("Read message failed: %s\n", strerror(errno));
+
+        return buf;
     }
 
     

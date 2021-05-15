@@ -7,6 +7,7 @@ namespace win {
         ReceivingWindow();
         ~ReceivingWindow();
         void show();
+        void printMessage(proto::MessageWrapper mw);
     private:
         WINDOW* win;
     };
