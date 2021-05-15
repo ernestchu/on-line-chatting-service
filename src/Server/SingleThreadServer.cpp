@@ -75,6 +75,7 @@ namespace srv {
             cnt::errexit("Read message failed: %s\n", strerror(errno));
 
         proto::MessageWrapper onBuf;
+        std::strcpy(onBuf.uname, "");
         std::strcpy(onBuf.message, this->makeOnlineMsg(sin, buf.uname).c_str());
         onBuf.timestamp = std::time(nullptr);
         this->broadcast(onBuf);
@@ -116,6 +117,7 @@ namespace srv {
 
             // send the offline message to all
             proto::MessageWrapper offBuf;
+            std::strcpy(offBuf.uname, "");
             std::strcpy(offBuf.message, this->makeOfflineMsg(sender).c_str());
             offBuf.timestamp = std::time(nullptr);
 

@@ -1,8 +1,11 @@
 #pragma once
 #include <Windows.hpp>
 #include <Network.hpp>
+#include <vector>
 #include <thread>
 #include <mutex>
+#include <regex>
+#include <sstream>
 
 namespace cli {
     class WindowController {
@@ -13,6 +16,11 @@ namespace cli {
     private:
         std::thread inputController();
         void ic();
+        int parseMessage(
+            const std::string& rawMessage,
+            std::string& message,
+            std::vector<std::string>& receivers
+        );
 
         WINDOW *win;
         std::mutex mu;

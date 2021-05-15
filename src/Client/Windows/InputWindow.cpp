@@ -17,7 +17,11 @@ namespace win {
     InputWindow::~InputWindow() {
         delwin(this->win);
     }
-    void InputWindow::show() {
+    void InputWindow::show(int clr) {
+        if (clr) {
+            werase(this->win);
+            box(this->win, 0, 0);
+        }
         wrefresh(this->win);
     }
     void InputWindow::fill() {

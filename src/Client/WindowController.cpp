@@ -30,7 +30,7 @@ namespace cli {
         this->network.setUname(loginWin.getUname());
 
         // connect to server
-        // this->network.connect();
+        this->network.connect();
 
         // ######### Enter chat room #############
 
@@ -39,12 +39,15 @@ namespace cli {
 
         // ######### Main thread (handle receiving) #############
         // since show() updates stdout, it must be atomic
-        this->mu.lock();
-        recvWin.show();
-        this->mu.unlock();
-
-        inputTh.join();
-
+        while (1) {
+            this->mu.lock();
+            recvWin.show();
+            this->mu.unlock();
+            if (inputTh.joinable()) {
+                inputTh.join();
+                break;
+            }
+        }
         endwin();
     }
     std::thread WindowController::inputController() {
@@ -53,11 +56,65 @@ namespace cli {
     }
     void WindowController::ic() {
         // real implementation for inputController()
-        this->mu.lock();
-        this->inputWin.show();
-        this->mu.unlock();
+        while (1) {
+            this->mu.lock();
+            this->inputWin.show(1);
+            this->mu.unlock();
 
-        this->inputWin.fill();
+            this->inputWin.fill();
+            std::string message;
+            std::vector<std::string> receivers;
+            int cmd = this->parseMessage(
+                this->inputWin.getMessage(),
+                message,
+                receivers
+            );
+            if (cmd == 0)       // illegal
+                this->network.sendUsage();
+            else if (cmd == 1)  // logout
+                return;
+            else if (cmd == 2)  // chat
+                for (const auto& receiver : receivers)
+                    this->network.send(receiver, message);
+        }
+    }
+    int WindowController::parseMessage(
+        const std::string& rawMessage,
+        std::string& message,
+        std::vector<std::string>& receivers
+    ) {
+        //test if the message format is legal
+        std::regex rule("(chat ([^ ]* )+\\\".+\\\"|logout)");
+        if (!std::regex_match(rawMessage, rule))
+            return 0;
+
+        // which command
+        std::regex cmdRule("(chat|logout)");
+        std::smatch match;
+        std::regex_search(rawMessage, match, cmdRule);
+        std::string cmd = match.str();
+
+        if (cmd == "logout")
+            return 1;
+
+        // extract real message;
+        std::regex msgRule("\\\".+\\\"");
+        std::regex_search(rawMessage, match, msgRule);
+        message = match.str();
+        // get rid of ""
+        message.erase(0, 1);
+        message.erase(message.size() - 1);
+
+        // tokenize receivers
+        std::string sub = rawMessage.substr(cmd.size()+1);
+        sub = sub.substr(0, sub.size()-match.str().size()-1);
+
+        std::istringstream iss(sub, std::istringstream::in);
+        std::string receiver;
+        while( iss >> receiver )
+            receivers.push_back(receiver);
+
+        return 2;
     }
 }
 

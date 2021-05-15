@@ -6,7 +6,7 @@ namespace win {
     public:
         InputWindow();
         ~InputWindow();
-        void show();
+        void show(int clr=0);
         void fill();
         std::string getMessage();
     private:
