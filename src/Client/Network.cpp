@@ -1,6 +1,7 @@
 #include <Network.hpp>
 
 namespace cli {
+    Network::~Network() { shutdown(this->fd, 2); }
     std::string Network::connect() {
         char uinfo[25];
         this->fd = cnt::connectTCP(
@@ -31,12 +32,12 @@ namespace cli {
 
     void Network::sendUsage() {
         proto::MessageWrapper buf;
-        std::strcpy(buf.uname, this->uname.c_str());
+        std::strcpy(buf.uname, "illegal");
         std::strcpy(
             buf.message,
             "\nUsage: <command> [<receiver> ...] [\"<message>\"]"
             "\nExamples:"
-            "\n\tchat Ernie \"May I ask for your LINE?\""
+            "\n\tsend Ernie \"May I ask for your LINE?\""
             "\n\tlist"
             "\n\tlogout"
         );

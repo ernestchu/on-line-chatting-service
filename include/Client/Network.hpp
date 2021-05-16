@@ -8,6 +8,7 @@
 namespace cli {
     class Network {
     public:       
+        ~Network();
         std::string connect();
         void send(
             const std::string& receiver,

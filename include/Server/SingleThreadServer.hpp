@@ -15,13 +15,7 @@ namespace srv {
         SingleThreadServer(const char* service, const int log);
         void mainloop();
     protected:
-        void addNewClient(
-            const struct sockaddr_in& sin,
-            const int& fd
-        );
-        // afds is needed to clr a fd when it's off-line
-        void readMessage(const int& fd, fd_set& afds);
-        void writeMessage(const int& fd);
+        
     };
 }
 

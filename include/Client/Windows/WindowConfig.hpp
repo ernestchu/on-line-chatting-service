@@ -10,6 +10,6 @@ namespace win {
     class WindowConfig {
     public:
         static constexpr double paddingRatio = .02;
-        static constexpr int inputLines = 4;
+        static constexpr int inputLines = 3;
     };
 }

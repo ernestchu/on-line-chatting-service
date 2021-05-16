@@ -7,7 +7,7 @@ namespace win {
         double padding = (yMax>xMax)? yMax: xMax;
         padding *= WindowConfig::paddingRatio;
         this->win = newwin(
-            (int)std::ceil(yMax - padding*2) - WindowConfig::inputLines,
+            (int)std::ceil(yMax - padding*2) - WindowConfig::inputLines - 1,
             (int)std::ceil(xMax - padding*2),
             (int)padding,
             (int)padding

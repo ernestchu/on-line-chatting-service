@@ -27,7 +27,7 @@ namespace win {
         int i = 1;
         for (const auto& label : {
             "Host",
-            "Service",
+            "Port",
             "Username",
         }) {
             mvwprintw(

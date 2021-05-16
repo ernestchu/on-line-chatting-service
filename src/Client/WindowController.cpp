@@ -107,12 +107,12 @@ namespace cli {
         std::vector<std::string>& receivers
     ) {
         //test if the message format is legal
-        std::regex rule("(chat ([^ ]* )+\\\".+\\\"|list|logout)");
+        std::regex rule("(send ([^ ]* )+\\\".+\\\"|list|logout)");
         if (!std::regex_match(rawMessage, rule))
             return 0;
 
         // which command
-        std::regex cmdRule("(chat|list|logout)");
+        std::regex cmdRule("(send|list|logout)");
         std::smatch match;
         std::regex_search(rawMessage, match, cmdRule);
         std::string cmd = match.str();
