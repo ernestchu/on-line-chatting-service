@@ -24,6 +24,7 @@ namespace srv {
         AbstractServer() = delete;
         AbstractServer(const char* service);
         AbstractServer(const char* service, const int log);
+        virtual ~AbstractServer() = default;
         virtual void mainloop() = 0;
     protected:
         void addNewClient(
