@@ -12,9 +12,9 @@ add_library(Windows INTERFACE ${HDIR}/Windows.hpp)
 
 target_include_directories(WindowConfig INTERFACE ${HDIR})
 
-target_compile_features(LoginWindow PUBLIC cxx_std_17)
-target_compile_features(InputWindow PUBLIC cxx_std_17)
-target_compile_features(ReceivingWindow PUBLIC cxx_std_17)
+target_compile_features(LoginWindow PUBLIC cxx_std_11)
+target_compile_features(InputWindow PUBLIC cxx_std_11)
+target_compile_features(ReceivingWindow PUBLIC cxx_std_11)
 
 target_link_libraries(WindowConfig INTERFACE ${CURSES_LIBRARIES} MessageWrapper)
 target_link_libraries(LoginWindow PUBLIC WindowConfig)

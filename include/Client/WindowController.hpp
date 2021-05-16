@@ -1,3 +1,9 @@
+/*
+ * Author: Ernie Chu
+ * Filename: WindowController.hpp
+ * Description: A client controller to coordinate the windows and back-end models
+ */
+
 #pragma once
 #include <Windows.hpp>
 #include <Network.hpp>

@@ -8,10 +8,6 @@ target_include_directories(PassiveSock PUBLIC ${HDIR})
 target_include_directories(PassiveTCP PUBLIC ${HDIR})
 target_include_directories(PassiveUDP PUBLIC ${HDIR})
 
-target_compile_features(PassiveSock PUBLIC cxx_std_17)
-target_compile_features(PassiveTCP PUBLIC cxx_std_17)
-target_compile_features(PassiveUDP PUBLIC cxx_std_17)
-
 target_link_libraries(PassiveSock PUBLIC Errexit)
 target_link_libraries(PassiveTCP PUBLIC PassiveSock)
 target_link_libraries(PassiveUDP PUBLIC PassiveSock)

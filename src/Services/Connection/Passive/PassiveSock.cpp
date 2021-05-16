@@ -1,13 +1,3 @@
-/*
- * Author: Ernie Chu
- * Filename: PassiveSock.cpp
- * Description: Allocate and bind a server socket using TCP or UDP
- * [Argument]
- *  service:    Service associated with the desired port, can also be port number
- *  transport:  Name of transport protocol to use ("tcp" or "udp")
- *  qlen:       Maximum server request queue length
- */
-
 #include <PassiveSock.hpp>
 
 extern int errno;

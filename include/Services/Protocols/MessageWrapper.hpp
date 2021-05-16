@@ -1,3 +1,9 @@
+/*
+ * Author: Ernie Chu
+ * Filename: MessageWrapper.hpp
+ * Description: A data structure to wrap up the related informations with messages
+ */
+
 #pragma once
 #include <ctime>
 

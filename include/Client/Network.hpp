@@ -1,3 +1,9 @@
+/*
+ * Author: Ernie Chu
+ * Filename: Network.hpp
+ * Description: A back-end network ultility collection for the client
+ */
+
 #pragma once
 #include <ConnectTCP.hpp>
 #include <MessageWrapper.hpp>

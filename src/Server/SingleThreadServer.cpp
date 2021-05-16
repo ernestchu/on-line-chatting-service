@@ -1,9 +1,3 @@
-/*
- * Author: Ernie Chu
- * Filename: SingleThreadServer.hpp
- * Description: A TCP server with single thread using select()
- */
-
 #include <SingleThreadServer.hpp>
 
 namespace srv {

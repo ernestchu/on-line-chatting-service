@@ -1,9 +1,3 @@
-/*
- * Author: Ernie Chu
- * Filename: AbstractServer.cpp
- * Description: An abstract TCP server base class
- */
-
 #include <AbstractServer.hpp>
 
 namespace srv {

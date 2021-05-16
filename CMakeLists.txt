@@ -16,5 +16,5 @@ set(CMAKE_BUILD_TYPE Debug)              # defaults to -g
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(apps)
 

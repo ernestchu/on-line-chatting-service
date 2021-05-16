@@ -1,13 +1,3 @@
-/*
- * Author: Ernie Chu
- * Filename: ConnectSock.cpp
- * Description: Allocate and connect a socket using TCP or UDP
- * [Argument]
- *  host:       Name of host to which connection is desires, can also be IP address
- *  service:    Service associated with the desired port, can also be port number
- *  transport:  Name of transport protocol to use ("tcp" or "udp")
- */
-
 #include <ConnectSock.hpp>
 
 namespace cnt {

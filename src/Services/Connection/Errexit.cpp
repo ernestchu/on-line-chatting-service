@@ -1,9 +1,3 @@
-/*
-* Author: Ernie Chu
-* Filename: Errexit.cpp
-* Description: Print an error message and exit
-*/
-
 #include <Errexit.hpp>
 
 namespace cnt {

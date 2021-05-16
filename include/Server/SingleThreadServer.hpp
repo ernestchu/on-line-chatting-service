@@ -4,6 +4,7 @@
  * Description: A TCP server with single thread using select()
  */
 
+#pragma once
 #include <AbstractServer.hpp>
 #include <sys/select.h>
 
@@ -14,8 +15,6 @@ namespace srv {
         SingleThreadServer(const char* service);
         SingleThreadServer(const char* service, const int log);
         void mainloop();
-    protected:
-        
     };
 }
 

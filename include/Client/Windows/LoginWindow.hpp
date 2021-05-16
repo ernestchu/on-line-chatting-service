@@ -1,3 +1,9 @@
+/*
+ * Author: Ernie Chu
+ * Filename: LoginWindow.hpp
+ * Description: A window for starting login session
+ */
+
 #pragma once
 #include <WindowConfig.hpp>
 

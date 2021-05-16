@@ -8,10 +8,6 @@ target_include_directories(ConnectSock PUBLIC ${HDIR})
 target_include_directories(ConnectTCP PUBLIC ${HDIR})
 target_include_directories(ConnectUDP PUBLIC ${HDIR})
 
-target_compile_features(ConnectSock PUBLIC cxx_std_17)
-target_compile_features(ConnectTCP PUBLIC cxx_std_17)
-target_compile_features(ConnectUDP PUBLIC cxx_std_17)
-
 target_link_libraries(ConnectSock PUBLIC Errexit)
 target_link_libraries(ConnectTCP PUBLIC ConnectSock)
 target_link_libraries(ConnectUDP PUBLIC ConnectSock)

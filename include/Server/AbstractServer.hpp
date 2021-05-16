@@ -4,6 +4,7 @@
  * Description: An abstract TCP server base class
  */
 
+#pragma once
 #include <PassiveTCP.hpp>
 #include <MessageWrapper.hpp>
 

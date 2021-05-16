@@ -1,3 +1,9 @@
+/*
+ * Author: Ernie Chu
+ * Filename: InputWindow.hpp
+ * Description: A window for message input in the chat room
+ */
+
 #pragma once
 #include <WindowConfig.hpp>
 
