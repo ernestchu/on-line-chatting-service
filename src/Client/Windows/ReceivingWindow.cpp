@@ -33,7 +33,7 @@ namespace win {
             wclrtoeol(this->win);
             box(this->win, 0, 0);
             if (alignL)
-                mvwprintw(this->win, nlines-1, ncols-25, "%s", msg.c_str());
+                mvwprintw(this->win, nlines-1, ncols-msg.size(), "%s", msg.c_str());
             else
                 mvwprintw(this->win, nlines-1, 2, "%s", msg.c_str());
         };
@@ -56,7 +56,7 @@ namespace win {
         }
         // check if there's trailing string
         if (
-            message.find("\n") != std::string::npos
+            message.find("\n") == std::string::npos
             && message.size()
         )
             printLine(message);

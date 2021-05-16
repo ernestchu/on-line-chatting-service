@@ -14,7 +14,8 @@ namespace cnt {
     int connectSock(
         const char* host,
         const char* service,
-        const char* transport
+        const char* transport,
+        char* uinfo
     ) {
         struct hostent      *phe;
         struct servent      *pse;
@@ -56,6 +57,7 @@ namespace cnt {
         if (connect(s, (struct sockaddr*)&sin, sizeof(sin)) < 0)
             errexit("can't connect to %s:%s: %s\n", host, service, strerror(errno));
             
+        sprintf(uinfo, "%s:%hu", inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
         return s;
     }
 }

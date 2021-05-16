@@ -1,16 +1,19 @@
 #include <Network.hpp>
 
 namespace cli {
-    void Network::connect() {
+    std::string Network::connect() {
+        char uinfo[25];
         this->fd = cnt::connectTCP(
             this->host.c_str(),
-            this->service.c_str()
+            this->service.c_str(),
+            uinfo
         );
         proto::MessageWrapper buf;
         std::strcpy(buf.uname, this->uname.c_str());
         if (write(this->fd, reinterpret_cast<char*>(&buf), sizeof(buf)) < 0)
             cnt::errexit("Write message failed: %s\n", strerror(errno));
 
+        return std::string(uinfo);
     }
 
     void Network::send(
@@ -31,9 +34,11 @@ namespace cli {
         std::strcpy(buf.uname, this->uname.c_str());
         std::strcpy(
             buf.message,
-            "\nUsage: <command> [<receiver> ...] [\"<message>\"]\n"
-            "Command: chat, logout\n"
-            "\tE.g. chat Ernie \"Good Program!\""
+            "\nUsage: <command> [<receiver> ...] [\"<message>\"]"
+            "\nExamples:"
+            "\n\tchat Ernie \"May I ask for your LINE?\""
+            "\n\tlist"
+            "\n\tlogout"
         );
         buf.timestamp = std::time(nullptr);
 

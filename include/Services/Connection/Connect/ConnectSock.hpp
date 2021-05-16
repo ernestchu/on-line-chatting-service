@@ -27,7 +27,8 @@ namespace cnt {
     int connectSock(
         const char* host,
         const char* service,
-        const char* transport
+        const char* transport,
+        char* uinfo
     );
 }
 

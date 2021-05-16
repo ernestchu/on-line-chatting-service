@@ -28,15 +28,18 @@ namespace win {
         // Fill the message
         echo();
         nocbreak();
-        curs_set(1); // show cursor      
  
         std::string buf;
-        int ch = mvwgetch(this->win, 1, 1);
+        mvwprintw(this->win, 1, 1, "$ ");
+        int ch = wgetch(this->win);
         while (ch != '\n') {
             buf.push_back(ch);
             ch = wgetch(this->win);
         }
         this->message = buf;
+
+        cbreak();
+        noecho();
     }
     std::string InputWindow::getMessage() { return this->message; }
 

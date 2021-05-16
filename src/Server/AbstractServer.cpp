@@ -37,5 +37,14 @@ namespace srv {
         for (auto const& [_, receiver] : this->onlineUsers)
             messagePool[receiver].push(msg); 
     }
+    std::string AbstractServer::systemResponse(const std::string& cmd) {
+        if (cmd == "list") {
+            return "TODO: list all user";
+        }
+        else if (cmd == "logout")
+            return "Bye!";
+        else
+            return cmd + ": command not found";
+    }
 }
 

@@ -12,7 +12,7 @@ namespace cli {
         noecho();
         curs_set(0); // hide cursor      
         // Print title
-        printw("The TCP Chat Room");
+        wprintw(this->win, "The TCP Chat Room.");
         wrefresh(this->win); // update stdout
 
         // ######### Login #############
@@ -30,12 +30,19 @@ namespace cli {
         this->network.setUname(loginWin.getUname());
 
         // connect to server
-        this->network.connect();
+        std::string uinfo = this->network.connect();
+        wprintw(
+            this->win, 
+            " Login as: %s@%s", 
+            this->loginWin.getUname().c_str(), 
+            uinfo.c_str()
+        );
+        wrefresh(this->win); // update stdout
 
         // ######### Enter chat room #############
 
         // ################## Input thread ######################
-        std::thread inputTh = this->inputController();
+        auto inputPromise = this->inputController();
 
         // ######### Main thread (handle receiving) #############
         // since show() updates stdout, it must be atomic
@@ -51,16 +58,16 @@ namespace cli {
             this->mu.unlock();
 
             // check if the user has entered `logout`
-            if (inputTh.joinable()) {
-                inputTh.join();
+            if (inputPromise.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                inputPromise.get();
                 break;
             }
         }
         endwin();
     }
-    std::thread WindowController::inputController() {
+    std::future<void> WindowController::inputController() {
         // spawn a new thread
-        return std::thread( [this] { this->ic(); } );
+        return std::async(std::launch::async, [this] { this->ic(); } );
     }
     void WindowController::ic() {
         // real implementation for inputController()
@@ -77,13 +84,21 @@ namespace cli {
                 message,
                 receivers
             );
-            if (cmd == 0)       // illegal
-                this->network.sendUsage();
-            else if (cmd == 1)  // logout
-                return;
-            else if (cmd == 2)  // chat
-                for (const auto& receiver : receivers)
-                    this->network.send(receiver, message);
+
+            switch (cmd) {
+                case 1:  // chat
+                    for (const auto& receiver : receivers)
+                        this->network.send(receiver, message);
+                    break;
+                case 2:  // list
+                    this->network.send("System", "list");
+                    break;
+                case 3:  // logout
+                    this->network.send("System", "logout");
+                    return;
+                default: // 0, illegal
+                    this->network.sendUsage();
+            }
         }
     }
     int WindowController::parseMessage(
@@ -92,18 +107,20 @@ namespace cli {
         std::vector<std::string>& receivers
     ) {
         //test if the message format is legal
-        std::regex rule("(chat ([^ ]* )+\\\".+\\\"|logout)");
+        std::regex rule("(chat ([^ ]* )+\\\".+\\\"|list|logout)");
         if (!std::regex_match(rawMessage, rule))
             return 0;
 
         // which command
-        std::regex cmdRule("(chat|logout)");
+        std::regex cmdRule("(chat|list|logout)");
         std::smatch match;
         std::regex_search(rawMessage, match, cmdRule);
         std::string cmd = match.str();
 
+        if (cmd == "list")
+            return 2;
         if (cmd == "logout")
-            return 1;
+            return 3;
 
         // extract real message;
         std::regex msgRule("\\\".+\\\"");
@@ -122,7 +139,7 @@ namespace cli {
         while( iss >> receiver )
             receivers.push_back(receiver);
 
-        return 2;
+        return 1;
     }
 }
 

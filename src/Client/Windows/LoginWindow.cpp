@@ -104,7 +104,7 @@ namespace win {
         // restore options
         noecho();
         cbreak();
-        curs_set(0);      
+        curs_set(0);
     }
   
 }

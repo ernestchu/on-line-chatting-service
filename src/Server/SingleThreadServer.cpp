@@ -12,7 +12,7 @@ namespace srv {
     SingleThreadServer::SingleThreadServer(const char* service, const int log) : 
         AbstractServer(service, log) {}
     void SingleThreadServer::mainloop() {
-        struct sockaddr_in sin;    // the src address of a client
+        struct sockaddr_in sin;     // the src address of a client
         int msock;                  // master server socket
         fd_set rfds;                // read file descriptor set
         fd_set wfds;                // write file descriptor set
@@ -50,7 +50,7 @@ namespace srv {
                 FD_SET(ssock, &afds);
                 this->addNewClient(sin, ssock);
             }
-            
+
             // Slave sockets: handle requests
             for (int fd = 0; fd < nfds; fd++) {
                 // Ready to be read from
@@ -63,7 +63,6 @@ namespace srv {
         }
     }
 
-
     void SingleThreadServer::addNewClient(
         const struct sockaddr_in& sin,
         const int& fd
@@ -75,7 +74,7 @@ namespace srv {
             cnt::errexit("Read message failed: %s\n", strerror(errno));
 
         proto::MessageWrapper onBuf;
-        std::strcpy(onBuf.uname, "");
+        std::strcpy(onBuf.uname, "System:");
         std::strcpy(onBuf.message, this->makeOnlineMsg(sin, buf.uname).c_str());
         onBuf.timestamp = std::time(nullptr);
         this->broadcast(onBuf);
@@ -100,11 +99,22 @@ namespace srv {
             std::string receiver = buf.uname;
             std::strcpy(buf.uname, sender.c_str());
 
-            if (this->registeredUsers.find(receiver) != this->registeredUsers.end())
+            if (receiver == "System") { // System message, list, logout, etc.
+                std::strcpy(
+                    buf.message, 
+                    this->systemResponse(std::string(buf.message)).c_str()
+                );
+            }
+
+            if (
+                sender != receiver
+                && this->registeredUsers.find(receiver) != this->registeredUsers.end()
+            )
                 messagePool[receiver].push(buf);
-            else
-                // if the sender receives his own uname -> receiver not found!
+            else {
+                std::strcpy(buf.uname, "System");
                 messagePool[sender].push(buf); 
+            }
 
             if (this->log)
                 this->messageLog(buf);
@@ -117,7 +127,7 @@ namespace srv {
 
             // send the offline message to all
             proto::MessageWrapper offBuf;
-            std::strcpy(offBuf.uname, "");
+            std::strcpy(offBuf.uname, "System");
             std::strcpy(offBuf.message, this->makeOfflineMsg(sender).c_str());
             offBuf.timestamp = std::time(nullptr);
 

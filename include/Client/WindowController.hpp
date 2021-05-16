@@ -2,7 +2,8 @@
 #include <Windows.hpp>
 #include <Network.hpp>
 #include <vector>
-#include <thread>
+#include <future>
+#include <chrono>
 #include <mutex>
 #include <regex>
 #include <sstream>
@@ -15,7 +16,7 @@ namespace cli {
         ~WindowController();
         void mainloop();
     private:
-        std::thread inputController();
+        std::future<void> inputController();
         void ic();
         int parseMessage(
             const std::string& rawMessage,

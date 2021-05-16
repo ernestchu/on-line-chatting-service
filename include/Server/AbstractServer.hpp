@@ -29,6 +29,7 @@ namespace srv {
         std::string makeOfflineMsg(const std::string& uname);
         void messageLog(const proto::MessageWrapper& msg, const int recv=1);
         void broadcast(const proto::MessageWrapper& msg);
+        std::string systemResponse(const std::string& cmd);
 
         const unsigned short QLEN    = 32;      // TCP queue length
         const unsigned short BUFSIZE =          // read/write buffer size

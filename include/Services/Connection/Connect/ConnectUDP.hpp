@@ -13,7 +13,8 @@
 namespace cnt {
     int connectUDP(
         const char* host,
-        const char* service
+        const char* service,
+        char* uinfo
     );
 }
 
