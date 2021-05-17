@@ -2,7 +2,7 @@ add_executable(Client Client.cpp)
 add_executable(Server Server.cpp)
 
 target_link_libraries(Client PUBLIC WindowController)
-target_link_libraries(Server PUBLIC SingleThreadServer)
+target_link_libraries(Server PUBLIC SingleThreadServer MultiThreadServer)
 
 add_custom_command(
     TARGET Client 

@@ -14,6 +14,9 @@ namespace srv {
         SingleThreadServer(const char* service);
         SingleThreadServer(const char* service, const int log);
         void mainloop();
+    private:
+        void removeClient(const int& fd);
+        fd_set afds;                // active file descriptor set
     };
 }
 

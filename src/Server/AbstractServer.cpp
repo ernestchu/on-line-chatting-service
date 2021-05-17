@@ -8,11 +8,8 @@ namespace srv {
         service(service),
         log(log) {}
 
-    void AbstractServer::addNewClient(
-        const struct sockaddr_in& sin,
-        const int& fd
-    ) {
-        // first time information acquire
+    void AbstractServer::addNewClient(const struct sockaddr_in& sin, const int& fd) {
+        // first time information acquisition
         proto::MessageWrapper buf; // buf.uname is the new client's name
         int nbytes = read(fd, reinterpret_cast<char*>(&buf), sizeof(buf));
         if (nbytes < 0)
@@ -33,7 +30,7 @@ namespace srv {
             std::cout << onBuf.message << std::endl;
     }
 
-    void AbstractServer::readMessage(const int& fd, fd_set& afds) {
+    int AbstractServer::readMessage(const int& fd) {
         proto::MessageWrapper buf; // buf.uname is whom fd wants to send to
 
         int nbytes = read(fd, reinterpret_cast<char*>(&buf), sizeof(buf));
@@ -94,25 +91,11 @@ namespace srv {
             if (this->log)
                 this->messageLog(buf);
         }
-        else {
-            // A user just went off-line
-            this->mu.lock();
-            FD_CLR(fd, &afds);
-            auto sender = onlineUsers[fd];
-            this->onlineUsers.erase(fd);
-            this->mu.unlock();
-
-            // send the offline message to all
-            proto::MessageWrapper offBuf;
-            std::strcpy(offBuf.uname, "System");
-            std::strcpy(offBuf.message, this->makeOfflineMsg(sender).c_str());
-            offBuf.timestamp = std::time(nullptr);
-
-            this->broadcast(offBuf);
-
-            if (this->log)
-                std::cout << offBuf.message << std::endl;
+        else { // nbytes == 0
+            this->removeClient(fd);
+            return 0; // indicated that the client has leaved
         }
+        return 1;
     }
 
     void AbstractServer::writeMessage(const int& fd) {

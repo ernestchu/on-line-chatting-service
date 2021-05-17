@@ -1,4 +1,5 @@
 #include <SingleThreadServer.hpp>
+#include <MultiThreadServer.hpp>
 
 void printUsage();
 
@@ -32,10 +33,10 @@ int main(int argc, char *argv[]) {
     //     server = std::unique_ptr<srv::AbstractServer>(
     //         new srv::MultiProcessServer(service.c_str(), 1)
     //     );
-    // else if (type == 2)
-    //     server = std::unique_ptr<srv::AbstractServer>(
-    //         new srv::MultiThreadServer(service.c_str(), 1)
-    //     );
+    else if (type == 2)
+        server = std::unique_ptr<srv::AbstractServer>(
+            new srv::MultiThreadServer(service.c_str(), 1)
+        );
 
     server->mainloop();
     return 0;

@@ -9,6 +9,7 @@
 #include <future>
 #include <chrono>
 #include <vector>
+#include <fcntl.h>
 
 namespace srv {
     class MultiThreadServer : public AbstractServer {
@@ -18,7 +19,8 @@ namespace srv {
         MultiThreadServer(const char* service, const int log);
         void mainloop();
     private:
-        void connectionHandler(int fd);
+        void connectionHandler(const int& fd);
+        void removeClient(const int& fd);
     };
 }
 

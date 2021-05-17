@@ -27,41 +27,37 @@ namespace srv {
         virtual ~AbstractServer() = default;
         virtual void mainloop() = 0;
     protected:
-        void addNewClient(
-            const struct sockaddr_in& sin,
-            const int& fd
-        );
-        void readMessage(const int& fd, fd_set& afds);
-        void writeMessage(const int& fd);
+        // function
+        void            addNewClient(const struct sockaddr_in& sin, const int& fd);
+        virtual void    removeClient(const int& fd) = 0;
+        int             readMessage(const int& fd);
+        void            writeMessage(const int& fd);
 
-        std::string makeOnlineMsg(
-            const struct sockaddr_in& sin,
-            const std::string& uname
-        );
-        std::string makeOfflineMsg(const std::string& uname);
-        void messageLog(const proto::MessageWrapper& msg, const int recv=1);
-        void broadcast(const proto::MessageWrapper& msg);
-        std::string systemResponse(const std::string& cmd);
-        std::string dumpUsers();
+        std::string     makeOnlineMsg(const struct sockaddr_in& sin, const std::string& uname);
+        std::string     makeOfflineMsg(const std::string& uname);
+        void            messageLog(const proto::MessageWrapper& msg, const int recv=1);
+        void            broadcast(const proto::MessageWrapper& msg);
+        std::string     systemResponse(const std::string& cmd);
+        std::string     dumpUsers();
 
-        const unsigned short QLEN    = 32;      // TCP queue length
-        const unsigned short BUFSIZE =          // read/write buffer size
-            sizeof(proto::MessageWrapper);
-        const char* service;                    // service name, port number
+        // variable
+        const unsigned short QLEN    = 32;                              // TCP queue length
+        const unsigned short BUFSIZE = sizeof(proto::MessageWrapper);   // read/write buffer size
+        const char* service;                                            // service name, port number
         const int log;
         std::mutex mu;
 
-        std::unordered_map<                     // Online users (lookup by fd)
+        std::unordered_map<                                             // Online users (lookup by fd)
             int,
             std::string
         > onlineUsers;
 
-        std::unordered_map<                     // A pool for all of the unsent messages
-            std::string,                        // (lookup by username)
+        std::unordered_map<                                             // A pool for all of the unsent messages
+            std::string,                                                // (lookup by username)
             std::queue<proto::MessageWrapper>
         > messagePool;
 
-        std::unordered_set<                     // Registered users in the history
+        std::unordered_set<                                             // Registered users in the history
             std::string
         > registeredUsers;
     };
