@@ -58,14 +58,8 @@ namespace srv {
 
         auto readFuture = std::async(std::launch::async, [&fd, this] {
             while(this->readMessage(fd));
-            // this->mu.lock();
-            // this->messagePool[this->onlineUser].push(buf); 
-            // this->mu.unlock();
         });
         while (1) {
-            // this->mu.lock();
-            // std::cout << std::this_thread::get_id() << "\n";
-            // this->mu.unlock();
             this->writeMessage(fd);
             if (readFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
                 readFuture.get();
