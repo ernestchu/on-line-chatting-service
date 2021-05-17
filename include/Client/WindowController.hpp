@@ -22,8 +22,7 @@ namespace cli {
         ~WindowController();
         void mainloop();
     private:
-        std::future<void> inputController();
-        void ic();
+        void inputController();
         int parseMessage(
             const std::string& rawMessage,
             std::string& message,

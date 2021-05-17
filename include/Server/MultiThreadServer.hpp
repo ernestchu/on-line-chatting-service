@@ -6,6 +6,9 @@
 
 #pragma once
 #include <AbstractServer.hpp>
+#include <future>
+#include <chrono>
+#include <vector>
 
 namespace srv {
     class MultiThreadServer : public AbstractServer {
@@ -14,6 +17,8 @@ namespace srv {
         MultiThreadServer(const char* service);
         MultiThreadServer(const char* service, const int log);
         void mainloop();
+    private:
+        void connectionHandler(int fd);
     };
 }
 

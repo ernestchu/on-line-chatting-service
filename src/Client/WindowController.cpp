@@ -42,7 +42,9 @@ namespace cli {
         // ######### Enter chat room #############
 
         // ################## Input thread ######################
-        auto inputPromise = this->inputController();
+        auto inputPromise = std::async(std::launch::async, [this] {
+            this->inputController();
+        });
 
         // ######### Main thread (handle receiving) #############
         // since show() updates stdout, it must be atomic
@@ -65,12 +67,7 @@ namespace cli {
         }
         endwin();
     }
-    std::future<void> WindowController::inputController() {
-        // spawn a new thread
-        return std::async(std::launch::async, [this] { this->ic(); } );
-    }
-    void WindowController::ic() {
-        // real implementation for inputController()
+    void WindowController::inputController() {
         while (1) {
             this->mu.lock();
             this->inputWin.show(1);
