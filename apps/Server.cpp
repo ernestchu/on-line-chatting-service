@@ -3,41 +3,50 @@
 
 void printUsage();
 
-int main(int argc, char *argv[]) {
-    int type = 0;
-    std::string service;
-    switch (argc) {
-        case 2:
-            service = argv[1];
-            break;
-        case 3:
-            if (argv[1][0] == '-') {
-                if (argv[1][1] == 'p')
-                    type = 1;
-                else if (argv[1][1] == 't')
-                    type = 2;
-                else
-                    printUsage();
-            service = argv[2];
-            break;
-            } else
+int main(int argc, char **argv) {
+    int tFlag = 0;
+    int vFlag = 0;
+    int error = 0;
+    char* service;
+    int c;
+
+    while ((c = getopt(argc, argv, "htv")) != -1)
+        switch (c) {
+            case 'h':
                 printUsage();
-            break;
-        default:
-            printUsage();
+                break;
+            case 't':
+                tFlag = 1;
+                break;
+            case 'v':
+                vFlag = 1;
+                break;
+            case '?':
+                error = 1;
+        }
+
+    if ((argc-optind) == 1)
+        service = argv[optind];
+    else if ((argc-optind) == 0) {
+        std::cerr << "You must specify the port number or service name.\n";
+        error = 1;
+    } else {
+        std::cerr << "Too many arguments.\n";
+        error = 1;
     }
+
+    if (error)
+        printUsage();
+
+
     std::unique_ptr<srv::AbstractServer> server;
-    if (type == 0)
+    if (tFlag)
         server = std::unique_ptr<srv::AbstractServer>(
-            new srv::SingleThreadServer(service.c_str(), 1)
+            new srv::MultiThreadServer(service, vFlag)
         );
-    // else if (type == 1)
-    //     server = std::unique_ptr<srv::AbstractServer>(
-    //         new srv::MultiProcessServer(service.c_str(), 1)
-    //     );
-    else if (type == 2)
+    else
         server = std::unique_ptr<srv::AbstractServer>(
-            new srv::MultiThreadServer(service.c_str(), 1)
+            new srv::SingleThreadServer(service, vFlag)
         );
 
     server->mainloop();
@@ -46,13 +55,14 @@ int main(int argc, char *argv[]) {
 
 void printUsage() {
     std::cout << 
-        "\nNAME:\n"
-        "\tServer -- start a on-line chatting server\n"
-        "SYNOPSIS\n"
-        "\t./Server [-pt] <port number | service name>\n"
+        "\nSYNOPSIS\n"
+        "\t./Server [-htv] <port number | service name>\n"
         "DESCRIPTION\n"
         "\tThe Server program use select() to run a concurrent program in defualt.\n"
-        "\tOne can specify -p to run the server in multiple processes.\n"
-        "\tOr specify -t to run the server in multiple threads\n\n";
+        "\tOne can specify -t to run the server in multiple threads.\n"
+        "OPTIONS\n"
+        "\t-h\tShow help\n"
+        "\t-t\tRun the server in multi-threaded mode.\n"
+        "\t-v\tProduce verbose output.\n\n";
     exit(1);
 }
