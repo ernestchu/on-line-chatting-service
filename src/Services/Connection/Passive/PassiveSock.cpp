@@ -41,10 +41,10 @@ namespace cnt {
 
         /* Bind the socket */
         if (bind(s, (struct sockaddr*)&sin, sizeof(sin)) < 0)
-            errexit("can't bind to %s port: %d\n", service, strerror(errno));
+            errexit("can't bind to port %s: %d\n", service, strerror(errno));
 
         if (type == SOCK_STREAM && listen(s, qlen) < 0)
-            errexit("can't listen on %s port : %s\n", service, strerror(errno));
+            errexit("can't listen on port %s: %s\n", service, strerror(errno));
 
         if (log)
             printHostAddrs(ntohs(sin.sin_port));

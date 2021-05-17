@@ -10,54 +10,65 @@ namespace srv {
         unsigned int alen;          // length of client's address
         int msock;                  // master server socket
         int ssock;                  // slave server socket
+        fd_set rfds;                // read file descriptor set
 
-        std::vector<std::future<void>> promises; // vector of thread's promise
+        std::vector<std::future<void>> futures; // vector of thread's future
 
         msock = cnt::passiveTCP(this->service, this->QLEN, this->log);
-
-        // make the socket non-blocking
-        int flags;
-        if ((flags = fcntl(msock, F_GETFL, 0)) == -1)
-            flags = 0;
-        fcntl(msock, F_SETFL, flags | O_NONBLOCK);
+        FD_ZERO(&rfds);
+        FD_SET(msock, &rfds);
+        this->mu.lock();
+        std::cout << "Master thread ID: " << std::this_thread::get_id() << std::endl;
+        this->mu.unlock();
 
         while (1) {
+            if (select(msock+1, &rfds, (fd_set*)0, (fd_set*)0, (struct timeval*)0) < 0)
+                cnt::errexit("select error: %s\n", strerror(errno));
+            
+            if (FD_ISSET(msock, &rfds)) {
+                // accept new connection
+                alen = sizeof(sin);
+                ssock = accept(msock, (struct sockaddr *)&sin, &alen);
+                if (ssock < 0) {
+                        cnt::errexit("accept: %s\n", strerror(errno));
+                }
+                this->addNewClient(sin, ssock);
+
+                // make a new thread to handle new client
+                futures.emplace_back(
+                    std::async(std::launch::async, [ssock, this] {
+                        this->connectionHandler(ssock);
+                    })
+                );
+            }
             // clean the completed thread
-            for (auto it = promises.begin(); it != promises.end(); ) {
+            for (auto it = futures.begin(); it != futures.end(); ) {
                 if (it->wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
                     it->get();
-                    it = promises.erase(it);
-                }
-                it++;
+                    it = futures.erase(it);
+                } else
+                    it++;
             }
-            
-            // accept new connection (non-blocking)
-            alen = sizeof(sin);
-            ssock = accept(msock, (struct sockaddr *)&sin, &alen);
-            if (ssock < 0) {
-                if (errno == EWOULDBLOCK || errno == EAGAIN)
-                    continue;
-                else
-                    cnt::errexit("accept: %s\n", strerror(errno));
-            }
-            this->addNewClient(sin, ssock);
-
-            // make a new thread to handle new client
-            promises.emplace_back(
-                std::async(std::launch::async, [&ssock, this] {
-                    this->connectionHandler(ssock);
-                })
-            );
         }
     }
     void MultiThreadServer::connectionHandler(const int& fd) {
-        auto readPromise = std::async(std::launch::async, [&fd, this] {
+        this->mu.lock();
+        std::cout << "Slave thread ID: " << std::this_thread::get_id() << std::endl;
+        this->mu.unlock();
+
+        auto readFuture = std::async(std::launch::async, [&fd, this] {
             while(this->readMessage(fd));
+            // this->mu.lock();
+            // this->messagePool[this->onlineUser].push(buf); 
+            // this->mu.unlock();
         });
         while (1) {
+            // this->mu.lock();
+            // std::cout << std::this_thread::get_id() << "\n";
+            // this->mu.unlock();
             this->writeMessage(fd);
-            if (readPromise.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                readPromise.get();
+            if (readFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                readFuture.get();
                 return;
             }
         }

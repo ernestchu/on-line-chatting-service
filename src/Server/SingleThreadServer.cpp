@@ -33,8 +33,7 @@ namespace srv {
             //      1) ready to be read from (client that is writing to the server)
             //      2) ready to be written to (client that is reading from the server)
             // So the server would not perform blocking reading/writing call
-            struct timeval zero = {0, 0};
-            if (select(nfds, &rfds, &wfds, (fd_set*)0, &zero) < 0)
+            if (select(nfds, &rfds, &wfds, (fd_set*)0, (struct timeval*)0) < 0)
                 cnt::errexit("select error: %s\n", strerror(errno));
 
             // Master socket: accept new request

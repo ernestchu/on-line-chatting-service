@@ -42,7 +42,7 @@ namespace cli {
         // ######### Enter chat room #############
 
         // ################## Input thread ######################
-        auto inputPromise = std::async(std::launch::async, [this] {
+        auto inputFuture = std::async(std::launch::async, [this] {
             this->inputController();
         });
 
@@ -60,8 +60,8 @@ namespace cli {
             this->mu.unlock();
 
             // check if the user has entered `logout`
-            if (inputPromise.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-                inputPromise.get();
+            if (inputFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+                inputFuture.get();
                 break;
             }
         }

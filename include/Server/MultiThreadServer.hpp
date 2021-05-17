@@ -9,7 +9,6 @@
 #include <future>
 #include <chrono>
 #include <vector>
-#include <fcntl.h>
 
 namespace srv {
     class MultiThreadServer : public AbstractServer {

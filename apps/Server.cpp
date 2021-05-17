@@ -18,6 +18,8 @@ int main(int argc, char *argv[]) {
                     type = 2;
                 else
                     printUsage();
+            service = argv[2];
+            break;
             } else
                 printUsage();
             break;
