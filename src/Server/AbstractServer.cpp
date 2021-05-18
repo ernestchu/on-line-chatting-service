@@ -66,12 +66,14 @@ namespace srv {
                     online.insert(v);
 
                 if (receiver == "System") { // System message, list, logout, etc.
-                    std::strcpy(
-                        buf.message, 
-                        this->systemResponse(std::string(buf.message)).c_str()
-                    );
-                    std::strcpy(buf.uname, "System");
-                    this->messagePool[sender].push(buf); // send back to the sender 
+                    if (std::string(buf.message) != "logout") {
+                        std::strcpy(
+                            buf.message, 
+                            this->systemResponse(std::string(buf.message)).c_str()
+                        );
+                        std::strcpy(buf.uname, "System");
+                        this->messagePool[sender].push(buf); // send back to the sender 
+                    }
                 } else {
                     if (this->registeredUsers.find(receiver) == this->registeredUsers.end()) {
                         // receiver not found (not registered)
@@ -159,11 +161,8 @@ namespace srv {
         this->mu.unlock();
     }
     std::string AbstractServer::systemResponse(const std::string& cmd) {
-        if (cmd == "list") {
+        if (cmd == "list")
             return this->dumpUsers();
-        }
-        else if (cmd == "logout")
-            return "Bye!";
         else
             return cmd + ": command not found";
     }
