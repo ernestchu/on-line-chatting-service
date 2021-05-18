@@ -25,12 +25,12 @@ namespace win {
         int yBeg, xBeg, yMax, xMax;
         getbegyx(this->win, yBeg, xBeg);
         getmaxyx(this->win, yMax, xMax);
-        int nlines = yMax - yBeg;
-        int ncols = xMax - xBeg;
+        const int nlines = yMax - yBeg;
+        const int ncols = xMax - xBeg;
         auto printLine = [&] (std::string msg, bool alignL=false) {
             scroll(this->win);
             wmove(this->win, nlines, 0);
-            wclrtoeol(this->win);
+            wclrtobot(this->win);
             box(this->win, 0, 0);
             if (alignL)
                 mvwprintw(this->win, nlines-1, ncols-msg.size(), "%s", msg.c_str());

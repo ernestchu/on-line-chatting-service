@@ -96,6 +96,15 @@ namespace srv {
         }
         else { // nbytes == 0
             this->removeClient(fd);
+            close(fd);
+
+            // ############### the map is not clean after erase! ##########
+            this->mu.lock();
+            for (auto const& [k, v] : this->onlineUsers)
+                std::cout << "what inside the onlineUsers: " << k << ":" << v << "EOL" << std::endl;
+            this->mu.unlock();
+        
+
             return 0; // indicated that the client has leaved
         }
         return 1;

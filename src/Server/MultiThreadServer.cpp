@@ -70,7 +70,7 @@ namespace srv {
     void MultiThreadServer::removeClient(const int& fd) {
         // A user just went off-line
         this->mu.lock();
-        auto sender = onlineUsers[fd];
+        auto sender = this->onlineUsers[fd];
         this->onlineUsers.erase(fd);
         this->mu.unlock();
 
