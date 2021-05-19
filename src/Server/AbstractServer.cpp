@@ -101,10 +101,12 @@ namespace srv {
             close(fd);
 
             // ############### the map is not clean after erase! ##########
+            // check what inside the map after removeClient()
             this->mu.lock();
             for (auto const& [k, v] : this->onlineUsers)
-                std::cout << "what inside the onlineUsers: " << k << ":" << v << "EOL" << std::endl;
+                std::cout << "[DEBUG] What inside the onlineUsers: " << k << ":" << v << "$EOL" << std::endl;
             this->mu.unlock();
+            // ############################################################
         
 
             return 0; // indicated that the client has leaved

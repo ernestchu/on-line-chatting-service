@@ -1,7 +1,10 @@
 #include <Network.hpp>
 
 namespace cli {
-    Network::~Network() { shutdown(this->fd, 2); }
+    Network::~Network() { 
+        shutdown(this->fd, 2);
+        close(fd);
+    }
     std::string Network::connect() {
         char uinfo[25];
         this->fd = cnt::connectTCP(
