@@ -22,12 +22,14 @@ namespace cli {
 
     void Network::send(
         const std::string& receiver,
-        const std::string& message
+        const std::string& message,
+        const int noSendBack
     ) {
         proto::MessageWrapper buf;
         std::strcpy(buf.uname, receiver.c_str());
         std::strcpy(buf.message, message.c_str());
         buf.timestamp = std::time(nullptr);
+        buf.noSendBack = noSendBack;
 
         if (write(this->fd, reinterpret_cast<char*>(&buf), sizeof(buf)) < 0)
             cnt::errexit("Write message failed: %s\n", strerror(errno));

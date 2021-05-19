@@ -85,7 +85,11 @@ namespace cli {
             switch (cmd) {
                 case 1:  // chat
                     for (const auto& receiver : receivers)
-                        this->network.send(receiver, message);
+                        this->network.send( // only send back the first msg
+                            receiver, 
+                            message, 
+                            (int)(receiver==receivers[0])
+                        );
                     break;
                 case 2:  // list
                     this->network.send("System", "list");

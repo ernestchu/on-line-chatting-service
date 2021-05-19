@@ -18,7 +18,7 @@ namespace srv {
             this->messageLog(buf);
 
         proto::MessageWrapper onBuf;
-        std::strcpy(onBuf.uname, "System:");
+        std::strcpy(onBuf.uname, "System");
         std::strcpy(onBuf.message, this->makeOnlineMsg(sin, buf.uname).c_str());
         onBuf.timestamp = std::time(nullptr);
         this->broadcast(onBuf);
@@ -57,7 +57,8 @@ namespace srv {
             }
             else {
                 // send back the orginal message to the sender
-                this->messagePool[sender].push(buf);
+                if (!buf.noSendBack)
+                    this->messagePool[sender].push(buf);
 
                 // make a set of online users
                 std::unordered_set<std::string> online;

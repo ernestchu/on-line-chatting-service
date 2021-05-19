@@ -18,7 +18,8 @@ namespace cli {
         std::string connect();
         void send(
             const std::string& receiver,
-            const std::string& message
+            const std::string& message,
+            const int noSendBack=0
         );
         void sendUsage();
         proto::MessageWrapper receive();

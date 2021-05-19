@@ -12,6 +12,7 @@ namespace proto {
         char uname[64];         // Used as sender when receiving; receiver when sending
         char message[512];
         std::time_t timestamp;
+        int noSendBack;           // if noSendBack==0, send the msg back to the sender
     };
 }
 
