@@ -88,7 +88,7 @@ namespace cli {
                         this->network.send( // only send back the first msg
                             receiver, 
                             message, 
-                            (int)(receiver==receivers[0])
+                            (int)(receiver!=receivers[0])
                         );
                     break;
                 case 2:  // list
