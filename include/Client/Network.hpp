@@ -10,6 +10,7 @@
 #include <string>
 #include <cstring>
 #include <unistd.h>
+#include <openabe/openabe.h>
 
 namespace cli {
     class Network {
@@ -27,10 +28,12 @@ namespace cli {
         void setHost(std::string host);
         void setService(std::string service);
         void setUname(std::string uname);
+        std::string getMpk();
     private:
         int fd;
         std::string host;
         std::string service;
         std::string uname;
+        std::string mpk;    // ABE master public key
     };
 }

@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <cstring>
 #include <mutex>
+#include <openabe/openabe.h>
 
 namespace srv {
     class AbstractServer {
@@ -46,6 +47,7 @@ namespace srv {
         const char* service;                                            // service name, port number
         const int log;
         std::mutex mu;
+        std::unique_ptr<oabe::OpenABECryptoContext> abe;
 
         std::unordered_map<                                             // Online users (lookup by fd)
             int,

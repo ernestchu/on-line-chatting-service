@@ -6,6 +6,21 @@ namespace srv {
     MultiThreadServer::MultiThreadServer(const char* service, const int log) : 
         AbstractServer(service, log) {}
     void MultiThreadServer::mainloop() {
+        // For encryption
+        oabe::InitializeOpenABE();
+        this->abe = std::unique_ptr<oabe::OpenABECryptoContext>(
+            new oabe::OpenABECryptoContext("CP-ABE")        
+        );
+        // generate master public-private key pair
+        this->abe->generateParams();
+        if (this->log) {
+            std::string mpk, msk;
+            this->abe->exportPublicParams(mpk);
+            this->abe->exportSecretParams(msk);
+            std::cout << "ABE public key:\n" << mpk << std::endl;
+            std::cout << "ABE private key:\n" << msk << std::endl;
+        }
+
         struct sockaddr_in sin;     // the src address of a client
         unsigned int alen;          // length of client's address
         int msock;                  // master server socket
@@ -50,8 +65,12 @@ namespace srv {
                     it++;
             }
         }
+        oabe::ShutdownOpenABE();
     }
     void MultiThreadServer::connectionHandler(const int& fd) {
+        // Initialize OpenABE state in this thread
+        oabe::OpenABEStateContext oabe;
+
         this->mu.lock();
         std::cout << "Slave thread ID: " << std::this_thread::get_id() << std::endl;
         this->mu.unlock();

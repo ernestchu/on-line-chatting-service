@@ -10,6 +10,21 @@ namespace srv {
             FD_ZERO(&this->afds);
         }
     void SingleThreadServer::mainloop() {
+        // For encryption
+        oabe::InitializeOpenABE();
+        this->abe = std::unique_ptr<oabe::OpenABECryptoContext>(
+            new oabe::OpenABECryptoContext("CP-ABE")        
+        );
+        // generate master public-private key pair
+        this->abe->generateParams();
+        if (this->log) {
+            std::string mpk, msk;
+            this->abe->exportPublicParams(mpk);
+            this->abe->exportSecretParams(msk);
+            std::cout << "ABE public key:\n" << mpk << std::endl;
+            std::cout << "ABE private key:\n" << msk << std::endl;
+        }
+
         struct sockaddr_in sin;     // the src address of a client
         int msock;                  // master server socket
         fd_set rfds;                // read file descriptor set
@@ -57,6 +72,7 @@ namespace srv {
                     this->writeMessage(fd);
             }
         }
+        oabe::ShutdownOpenABE();
     }
     void SingleThreadServer::removeClient(const int& fd) {
         // A user just went off-line

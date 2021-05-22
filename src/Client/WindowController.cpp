@@ -8,6 +8,12 @@ namespace cli {
     }
     
     void WindowController::mainloop() {
+        // For encryption
+        oabe::InitializeOpenABE();
+        this->abe = std::unique_ptr<oabe::OpenABECryptoContext>(
+            new oabe::OpenABECryptoContext("CP-ABE")        
+        );
+
         // set some option
         noecho();
         curs_set(0); // hide cursor      
@@ -31,13 +37,16 @@ namespace cli {
 
         // connect to server
         std::string uinfo = this->network.connect();
+        // this->abe->importPublicParams(this->network.getMpk());
         wprintw(
             this->win, 
             " Login as: %s@%s", 
             this->loginWin.getUname().c_str(), 
-            uinfo.c_str()
+            // uinfo.c_str()
+            this->network.getMpk().c_str()
         );
         wrefresh(this->win); // update stdout
+        wgetch(this->win);
 
         // ######### Enter chat room #############
 
@@ -66,6 +75,7 @@ namespace cli {
             }
         }
         endwin();
+        oabe::ShutdownOpenABE();
     }
     void WindowController::inputController() {
         while (1) {

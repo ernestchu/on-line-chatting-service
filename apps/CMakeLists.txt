@@ -1,8 +1,10 @@
 add_executable(Client Client.cpp)
 add_executable(Server Server.cpp)
 
-target_link_libraries(Client PUBLIC WindowController)
-target_link_libraries(Server PUBLIC SingleThreadServer MultiThreadServer)
+target_link_directories(Client PUBLIC /usr/local/lib)
+target_link_directories(Server PUBLIC /usr/local/lib)
+target_link_libraries(Client PUBLIC WindowController openabe)
+target_link_libraries(Server PUBLIC SingleThreadServer MultiThreadServer openabe)
 
 add_custom_command(
     TARGET Client 

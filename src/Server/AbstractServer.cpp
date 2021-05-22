@@ -1,15 +1,12 @@
 #include <AbstractServer.hpp>
 
 namespace srv {
-    AbstractServer::AbstractServer(const char* service) :
-        service(service),
-        log(0) {}
+    AbstractServer::AbstractServer(const char* service) : AbstractServer(service, 0) {}
     AbstractServer::AbstractServer(const char* service, const int log) :
-        service(service),
-        log(log) {}
+        service(service), log(log) {}
 
     void AbstractServer::addNewClient(const struct sockaddr_in& sin, const int& fd) {
-        // first time information acquisition
+        // first time information exchange
         proto::MessageWrapper buf; // buf.uname is the new client's name
         int nbytes = read(fd, reinterpret_cast<char*>(&buf), sizeof(buf));
         if (nbytes < 0)
@@ -17,6 +14,14 @@ namespace srv {
         if (this->log)
             this->messageLog(buf);
 
+        // The length of the master public key is 664
+        std::string mpk;
+        this->abe->exportPublicParams(mpk);
+        char mpk_cstr[700];
+        std::strcpy(mpk_cstr, mpk.c_str());
+        if (write(fd, mpk_cstr, sizeof(mpk_cstr)) < 0)
+            cnt::errexit("Write master public key failed: %s\n", strerror(errno));
+        
         proto::MessageWrapper onBuf;
         std::strcpy(onBuf.uname, "System");
         std::strcpy(onBuf.message, this->makeOnlineMsg(sin, buf.uname).c_str());
