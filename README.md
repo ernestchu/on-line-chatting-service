@@ -1,6 +1,6 @@
 # On-line Chatting Service
 
-The chat messages can now be encrypted by **Attribute-based encryption**. Check out the [`abe` branch](https://github.com/ernestchu/on-line-chatting-service/tree/abe) for more details.
+The chat messages can now be encrypted by **Attribute-based encryption**. Check out the [`abe`](https://github.com/ernestchu/on-line-chatting-service/tree/abe) branch for more details.
 
 ![login](./assets/images/login.png)
 ![chat](./assets/images/chat.png)
