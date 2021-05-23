@@ -17,13 +17,20 @@ namespace cli {
         if (write(this->fd, reinterpret_cast<char*>(&buf), sizeof(buf)) < 0)
             cnt::errexit("Write message failed: %s\n", strerror(errno));
 
-        // The length of the master public key is 664
-        char mpk_cstr[700];
+        // send master public key
+        char mpk_cstr[1024];
         int nbytes = read(fd, mpk_cstr, sizeof(mpk_cstr));
         if (nbytes < 0)
             cnt::errexit("Read master public key failed: %s\n", strerror(errno));
-
         this->mpk = std::string(mpk_cstr);
+
+        // send the private (secret) key based on the user name
+        char sk_cstr[1024];
+        nbytes = read(fd, sk_cstr, sizeof(sk_cstr));
+        if (nbytes < 0)
+            cnt::errexit("Read master public key failed: %s\n", strerror(errno));
+        this->sk = std::string(sk_cstr);
+
         return std::string(uinfo);
     }
 
@@ -73,4 +80,5 @@ namespace cli {
     void Network::setService(std::string service) { this->service = service; }
     void Network::setUname(std::string uname) { this->uname = uname; }
     std::string Network::getMpk() { return this->mpk; }
+    std::string Network::getSk() { return this->sk; }
 }

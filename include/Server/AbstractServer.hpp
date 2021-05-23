@@ -47,7 +47,8 @@ namespace srv {
         const char* service;                                            // service name, port number
         const int log;
         std::mutex mu;
-        std::unique_ptr<oabe::OpenABECryptoContext> abe;
+        std::string mpk;    // ABE master public key
+        std::string msk;    // ABE master private (secret) key
 
         std::unordered_map<                                             // Online users (lookup by fd)
             int,

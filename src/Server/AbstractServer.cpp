@@ -13,14 +13,6 @@ namespace srv {
             cnt::errexit("Read message failed: %s\n", strerror(errno));
         if (this->log)
             this->messageLog(buf);
-
-        // The length of the master public key is 664
-        std::string mpk;
-        this->abe->exportPublicParams(mpk);
-        char mpk_cstr[700];
-        std::strcpy(mpk_cstr, mpk.c_str());
-        if (write(fd, mpk_cstr, sizeof(mpk_cstr)) < 0)
-            cnt::errexit("Write master public key failed: %s\n", strerror(errno));
         
         proto::MessageWrapper onBuf;
         std::strcpy(onBuf.uname, "System");
@@ -32,6 +24,24 @@ namespace srv {
         this->registeredUsers.insert(buf.uname);
         this->onlineUsers[fd] = buf.uname;
         this->mu.unlock();
+
+        // send master public key
+        char mpk_cstr[1024];
+        std::strcpy(mpk_cstr, this->mpk.c_str());
+        if (write(fd, mpk_cstr, sizeof(mpk_cstr)) < 0)
+            cnt::errexit("Write master public key failed: %s\n", strerror(errno));
+
+        // send the private (secret) key based on the user name
+        oabe::OpenABECryptoContext abe("CP-ABE");        
+        abe.importPublicParams(this->mpk);
+        abe.importSecretParams(this->msk);
+        abe.keygen(std::string(buf.uname), "unameKey");
+        std::string sk;
+        abe.exportUserKey("unameKey", sk);
+        char sk_cstr[1024];
+        std::strcpy(sk_cstr, sk.c_str());
+        if (write(fd, sk_cstr, sizeof(sk_cstr)) < 0)
+            cnt::errexit("Write master public key failed: %s\n", strerror(errno));
 
         this->mu.lock();
         if (this->log)

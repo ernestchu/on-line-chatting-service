@@ -36,7 +36,6 @@ namespace cli {
         win::InputWindow inputWin;
         win::ReceivingWindow recvWin;
         Network network;
-        std::unique_ptr<oabe::OpenABECryptoContext> abe;
     };
 }
 

@@ -29,11 +29,13 @@ namespace cli {
         void setService(std::string service);
         void setUname(std::string uname);
         std::string getMpk();
+        std::string getSk();
     private:
         int fd;
         std::string host;
         std::string service;
         std::string uname;
         std::string mpk;    // ABE master public key
+        std::string sk;     // ABE private (secret) key
     };
 }

@@ -10,9 +10,7 @@ namespace cli {
     void WindowController::mainloop() {
         // For encryption
         oabe::InitializeOpenABE();
-        this->abe = std::unique_ptr<oabe::OpenABECryptoContext>(
-            new oabe::OpenABECryptoContext("CP-ABE")        
-        );
+        oabe::OpenABECryptoContext abe("CP-ABE");        
 
         // set some option
         noecho();
@@ -31,22 +29,26 @@ namespace cli {
 
         // ######### Connect #############
         // config connection info
-        this->network.setHost(loginWin.getHost());
-        this->network.setService(loginWin.getService());
-        this->network.setUname(loginWin.getUname());
+        this->network.setHost(this->loginWin.getHost());
+        this->network.setService(this->loginWin.getService());
+        this->network.setUname(this->loginWin.getUname());
 
         // connect to server
         std::string uinfo = this->network.connect();
-        // this->abe->importPublicParams(this->network.getMpk());
+
+        // import the master public key, private key
+        abe.importPublicParams(this->network.getMpk());
+        abe.enableKeyManager(this->loginWin.getUname());
+        abe.importUserKey("unameKey", this->network.getSk());
+        
+        // update windows
         wprintw(
             this->win, 
             " Login as: %s@%s", 
             this->loginWin.getUname().c_str(), 
-            // uinfo.c_str()
-            this->network.getMpk().c_str()
+            uinfo.c_str()
         );
         wrefresh(this->win); // update stdout
-        wgetch(this->win);
 
         // ######### Enter chat room #############
 
@@ -63,6 +65,21 @@ namespace cli {
             this->mu.unlock();
 
             proto::MessageWrapper mw = this->network.receive();
+            
+            if (
+                std::string(mw.uname) != "System"
+                && std::string(mw.message) != "list"
+            ) {
+                // perform ABE decryption
+                std::string ct(mw.message), pt; // ciphertext, plaintext
+                try {
+                    if (abe.decrypt(ct, pt))
+                        std::strcpy(mw.message, pt.c_str());
+                } catch (oabe::ZCryptoBoxException& ex) {
+                    std::strcpy(mw.message, "Sorry, the messsage cannot be decrypted.");
+                }
+            }
+
             this->mu.lock();
             this->recvWin.printMessage(mw);
             recvWin.show();
@@ -78,6 +95,15 @@ namespace cli {
         oabe::ShutdownOpenABE();
     }
     void WindowController::inputController() {
+        // Initialize OpenABE state in this thread
+        oabe::OpenABEStateContext oabe;
+        oabe::OpenABECryptoContext abe("CP-ABE");        
+        // import the master public key, private key
+        abe.importPublicParams(this->network.getMpk());
+        abe.enableKeyManager(this->loginWin.getUname());
+        abe.importUserKey("unameKey", this->network.getSk());
+        
+
         while (1) {
             this->mu.lock();
             this->inputWin.show(1);
@@ -91,13 +117,19 @@ namespace cli {
                 message,
                 receivers
             );
-
+            std::string ciphertext, policy=this->loginWin.getUname();
             switch (cmd) {
                 case 1:  // chat
+                    // perform ABE encryption
+                    for (const auto& receiver : receivers)
+                        policy += (" or " + receiver);
+
+                    // make only one copy of ciphertext
+                    abe.encrypt(policy, message, ciphertext);
                     for (const auto& receiver : receivers)
                         this->network.send( // only send back the first msg
                             receiver, 
-                            message, 
+                            ciphertext, 
                             (int)(receiver!=receivers[0])
                         );
                     break;
