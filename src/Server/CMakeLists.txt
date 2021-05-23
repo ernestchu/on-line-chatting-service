@@ -1,5 +1,5 @@
 set(HDIR "${CMAKE_SOURCE_DIR}/include/Server")
-find_package (Threads)
+find_package (Threads REQUIRED)
 
 add_library(AbstractServer STATIC AbstractServer.cpp ${HDIR}/AbstractServer.hpp)
 add_library(SingleThreadServer STATIC SingleThreadServer.cpp ${HDIR}/SingleThreadServer.hpp)
