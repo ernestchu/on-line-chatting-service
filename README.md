@@ -2,11 +2,13 @@
 
 ![login](./assets/images/login.png)
 ![chat](./assets/images/chat.png)
+![ciphertext](./assets/images/ciphertext.png)
 
 ## Dependencies
 
 - ncurses
 - CMake
+- [OpenABE](https://github.com/zeutro/openabe)
 
 ## Build
 Use CMake to build both the client and server program
