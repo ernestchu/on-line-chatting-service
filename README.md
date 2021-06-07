@@ -1,6 +1,6 @@
 # On-line Chatting Service
 
-[Demo](https://youtu.be/S-j5kQz_-7Y)(in Chinese).
+[Demo](https://youtu.be/S-j5kQz_-7Y) (in Chinese).
 
 The chat messages can now be encrypted by **Attribute-based encryption**. Check out the [`abe`](https://github.com/ernestchu/on-line-chatting-service/tree/abe) branch for more details.
 
