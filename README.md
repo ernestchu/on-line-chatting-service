@@ -1,6 +1,6 @@
 # On-line Chatting Service
 
-[Demo](https://youtu.be/S-j5kQz_-7Y)
+[Demo](https://youtu.be/S-j5kQz_-7Y) (in Chinese).
 
 ![login](./assets/images/login.png)
 ![chat](./assets/images/chat.png)
